@@ -1,4 +1,4 @@
-// AIR HOCKEY CONTROLER
+// TIME RELAY CONTROLLER
 // CREATED BY JAKUB TENK
 
 // PINS
@@ -40,10 +40,10 @@ void loop()
   	pos3 = digitalRead(pinSwitchPos3);
   	pos4 = digitalRead(pinSwitchPos4);
   
-  	if (pos1==1) time = 5000;
-  	if (pos2==1) time = 10000;
-  	if (pos3==1) time = 15000;
-  	if (pos4==1) time = 20000;
+  	if (pos1==1) time = 600000;
+  	if (pos2==1) time = 900000;
+  	if (pos3==1) time = 1200000;
+  	if (pos4==1) time = 1500000;
   	if (pos1!=1&&pos2!=1&&pos3!=1&&pos4!=1) time = 0;
   
     if (loopCheck == true && time > 0) {
