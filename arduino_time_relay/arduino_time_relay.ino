@@ -1,79 +1,87 @@
-// TIME RELAY CONTROLLER
+// AIR HOCKEY CONTROLER - TIME RELAY
 // CREATED BY JAKUB TENK
 
-// PINS
-int pinRelay = 9; // Relay
-int pinLedOn = 8; // Led if relay is on
-int pinLedOff = 7; // Led if relay is off
-int pinSwitchPos1 = 6; // 10 min
-int pinSwitchPos2 = 5; // 15 min
-int pinSwitchPos3 = 4; // 20 min
-int pinSwitchPos4 = 3; // 25 min
-int pinStopBtn = 2; // STOP BUTTON
+// Arrays with IN / OUT pins number
+int outputPins[3] = {
+  9, // RELAY
+  8, // GREEN LED
+  7 // RED LED
+};
 
-// VARIABLES
-bool loopCheck = true;
-int time = 0;
-int pos1 = 0;
-int pos2 = 0;
-int pos3 = 0;
-int pos4 = 0;
-int stopBtn = 0;
+int inputPins[5] = {
+  6, // 5 min
+  5, // 10 min
+  4, // 15 min
+  3, // 20 min
+  2 // STOP BTN
+};
 
-// CODE
+// Initialization - setup pins
 void setup()
 {
-    //Serial.begin(9600);
-    pinMode(pinRelay, OUTPUT);
-    pinMode(pinLedOn, OUTPUT);
-    pinMode(pinLedOff, OUTPUT);
-    pinMode(pinSwitchPos1, INPUT);
-    pinMode(pinSwitchPos2, INPUT);
-    pinMode(pinSwitchPos3, INPUT);
-    pinMode(pinSwitchPos4, INPUT);
+  for(int i = 0; i < sizeof(outputPins); i++)
+  	pinMode(outputPins[i], OUTPUT);
+  
+  for(int i = 0; i < sizeof(inputPins); i++)
+  	pinMode(inputPins[i], INPUT);
+	
+  //Serial.begin(9600);
 }
 
+// Main loop
 void loop()
 {  
-  	pos1 = digitalRead(pinSwitchPos1);
-  	pos2 = digitalRead(pinSwitchPos2);
-  	pos3 = digitalRead(pinSwitchPos3);
-  	pos4 = digitalRead(pinSwitchPos4);
+  // Disable relay and turn off green led, turn on red led
+  digitalWrite(outputPins[0], LOW);
+  digitalWrite(outputPins[1], LOW);
+  digitalWrite(outputPins[2], HIGH);
   
-  	if (pos1==1) time = 600000;
-  	if (pos2==1) time = 900000;
-  	if (pos3==1) time = 1200000;
-  	if (pos4==1) time = 1500000;
-  	if (pos1!=1&&pos2!=1&&pos3!=1&&pos4!=1) time = 0;
+  // Time variables
+  float time = 0;
+  float timeMultiplier = 300000; // 5 min
+  int numberOfTimeSelectionBtns = 4;
   
-    if (loopCheck == true && time > 0) {
-		//Serial.write(" START \n");
-      	loopCheck = false;
-      	process();
-    }
-  	delay(0);
+  
+  // Read input pins  
+  for(int i = 0; i < 5; i++)
+  {
+  	if (digitalRead(inputPins[i]) && i != numberOfTimeSelectionBtns)
+  	{  
+      		time = (i + 1) * timeMultiplier;
+      		break;
+      	}
+      	else
+        	time = 0;
+  }
+  
+  if (time > 0)
+  {
+      	/*
+        Serial.write("\n\rSTARTING PROCESS\n\r");
+      	Serial.write("TIME: ");
+      	Serial.print(time);
+      	Serial.write(" ms\n\r\n\r");
+      	*/
+      
+      	process(time);
+  }
+  
+  delay(0);
 }
 
-void process()
+// Process function for enabled relay
+void process(float time)
 {
-  	digitalWrite(pinRelay, HIGH);
-    digitalWrite(pinLedOn, HIGH);
-    digitalWrite(pinLedOff, LOW);
-  
-  	for (int i = 0; i <= time; i++) {
-  		stopBtn = digitalRead(pinStopBtn);
-      
-      	if (stopBtn==1) {
-  			//Serial.write(" STOP \n");
+  // Enable relay and turn on green led
+  digitalWrite(outputPins[0], HIGH);
+  digitalWrite(outputPins[1], HIGH);
+  digitalWrite(outputPins[2], LOW);
+	
+  // Check if stop btn is pressed while counting time
+  for (int i = 0; i <= time; i++) {
+  	if (digitalRead(inputPins[4]))
         	break;
-      	}
-      
+	  
       	delay(1);
     }
-  
-    digitalWrite(pinRelay, LOW);
-    digitalWrite(pinLedOn, LOW);
-    digitalWrite(pinLedOff, HIGH);
-    loopCheck = true;
-    delay(1);
 }
