@@ -10,6 +10,10 @@
   Basic relay controller, which is using 4 buttons. Each button has define different time during, which the relay is closed.
 </p>
 
+## Circuit diagram
+
+![image](https://user-images.githubusercontent.com/23415613/172626067-b7e6bdcd-6605-4ae6-aa49-d7f00ad4e6e5.png)
+
 ## Contact
 
 Twitter: [@DrGumik](https://twitter.com/DrGumik)
